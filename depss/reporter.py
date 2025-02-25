@@ -12,6 +12,7 @@ from depss.models import (
     VulnerDataModel,
 )
 
+
 class ReportTypes(enum.StrEnum):
     """Типы отчетов"""
 
@@ -50,48 +51,29 @@ class Reporter:
                 return self.__generate_report_markdown()
 
     def __generate_report_html(self) -> str:
-        """Метод генерации отчета"""
+        """Метод генерации отчета HTML"""
 
         pass
 
     def __generate_report_markdown(self) -> str:
-        """Метод генерации отчета"""
+        """Метод генерации отчета MARKDOWN"""
 
         pass
 
     def __generate_report_json(self) -> ReportModel:
-        """Метод генерации отчета"""
+        """
+        Метод генерации отчета JSON
 
+        :return: Сформированный отчет
+        """
 
-        report = ReportModel(
-            creation_date=datetime.now().strftime(TIMESTAMP_FORMAT),
-        )
+        report = ReportModel(creation_date=datetime.now().strftime(TIMESTAMP_FORMAT))
         for vulner in self.vulnerabilities:
             file_name = f'{vulner.source_name}.{vulner.vulner_id}.{vulner.vulner_id}.json'
             pkg_vulner_data = orjson_load_file(PYTHON_PACKAGE_VULNERS_DIR / file_name)
-            ratings = []
-            for rating in pkg_vulner_data['ratings']:
-                ratings.append(
-                    Rating(
-                        method='CVSS',
-                        score=rating['score'],
-                        severity=rating['severity'],
-                        source_name=rating['source_name'],
-                        source_url=rating['source_url'],
-                        vector=rating['vector'],
-                        version=rating['version'],
-                    )
-                )
 
-            affected_soft = []
-            for soft in vulner.affected_soft:
-                affected_soft.append(
-                    AffectedSoft(
-                        name=soft.pkg_name,
-                        pkg_version=soft.pkg_version,
-                        vulnerable_interval=soft.vulnerable_interval,
-                    )
-                )
+            ratings = self.__get_ratings_data(pkg_vulner_data['ratings'])
+            affected_soft = self.__get_affected_pkgs_data(vulner)
 
             report.vulnerabilities.append(
                 VulnerDataModel(
@@ -108,3 +90,49 @@ class Reporter:
             )
 
         return report
+
+    @staticmethod
+    def __get_ratings_data(pkg_vulner_rating: dict) -> list:
+        """
+        Метод получения рейтинга
+
+        :param pkg_vulner_rating: Информация об рейтинге уязвимости
+        :return: Список всех рейтингов уязвимости
+        """
+
+        ratings = []
+        for rating in pkg_vulner_rating:
+            ratings.append(
+                Rating(
+                    method='CVSS',
+                    score=rating['score'],
+                    severity=rating['severity'],
+                    source_name=rating['source_name'],
+                    source_url=rating['source_url'],
+                    vector=rating['vector'],
+                    version=rating['version'],
+                )
+            )
+
+        return ratings
+
+    @staticmethod
+    def __get_affected_pkgs_data(vulner:  DetectedVulnerability) -> list:
+        """
+        Метод получения информации об уязвимых компонентах
+
+        :param vulner: Объект найденной уязвимости
+        :return: Список уязвимых софтов
+        """
+
+        affected_soft = []
+        for soft in vulner.affected_soft:
+            affected_soft.append(
+                AffectedSoft(
+                    name=soft.pkg_name,
+                    pkg_version=soft.pkg_version,
+                    vulnerable_interval=soft.vulnerable_interval,
+                )
+            )
+
+        return affected_soft

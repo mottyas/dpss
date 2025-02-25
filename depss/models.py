@@ -3,17 +3,13 @@
 """
 
 import enum
-from time import timezone
 from dataclasses import dataclass
 from datetime import datetime
 
 import paramiko
 from pydantic import (
-    Field,
-    StringConstraints,
     BaseModel,
     AnyUrl,
-    field_validator,
 )
 
 from depss.const import TIMESTAMP_FORMAT
@@ -78,6 +74,7 @@ class DetectedSoft:
     pkg_name: str
     pkg_version: str
 
+
 @dataclass
 class DetectedVulnerability:
     """Датакласс с кратким описанием найденной уязвимости"""
@@ -85,6 +82,7 @@ class DetectedVulnerability:
     vulner_id: str
     source_name: str
     affected_soft: list[DetectedSoft]
+
 
 class AffectedSoft(BaseModel):
     """Класс валидации уязвимого софта"""
@@ -97,7 +95,7 @@ class AffectedSoft(BaseModel):
 
 
 class Rating(BaseModel):
-    """Класс валидации уязвимого софта"""
+    """Класс валидации рейтинга уязвимости"""
 
     method: str | None = None
     score: float | None = None
@@ -107,7 +105,9 @@ class Rating(BaseModel):
     vector: str | None = None
     version: float | None = None
 
+
 class VulnerDataModel(BaseModel):
+    """Класс валидации информации об уязвимости"""
 
     identifier: str
     published: str
@@ -119,8 +119,9 @@ class VulnerDataModel(BaseModel):
     ratings: list[Rating] | None = None
     references: list[dict] | None = None
 
+
 class ReportModel(BaseModel):
-    """Модель валидации отчета"""
+    """Модель валидации всего отчета"""
 
     vulnerabilities: list[VulnerDataModel] | None = []
     creation_date: str

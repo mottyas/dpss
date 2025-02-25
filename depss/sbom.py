@@ -2,7 +2,6 @@
 Модуль генератора Software Bill Of Materials
 """
 
-
 import json
 import subprocess
 from pathlib import Path

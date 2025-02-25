@@ -2,13 +2,20 @@ import sqlite3
 from pathlib import Path
 
 from depss.models import VulnerableInterval, VersionBorder
+from depss.const import INF, INFINITE_VERSION
 
 class VulnerabilityDB:
     """Класс работы с БД уязвимостей"""
 
+    SELECT_PKG_INFO_QUERY = '''
+    SELECT vulnerability, source, name, opener, version_left, version_right, closer
+    FROM packages
+    WHERE name == "{pkg_name}";
+    '''
+
     def __init__(self, db_path: Path | str) -> None:
         """
-        Инициализация
+        Инициализация класса
 
         :param db_path: Путь до файла с БД
         """
@@ -35,34 +42,24 @@ class VulnerabilityDB:
         """
 
         cursor = self.connection.cursor()
-        cursor.execute(
-            f'''
-            SELECT vulnerability, source, name, opener, version_left, version_right, closer
-            FROM packages
-            WHERE name == "{pkg_name}";
-            '''
-        )
-
-        found_pkgs = cursor.fetchall()
+        cursor.execute(self.SELECT_PKG_INFO_QUERY.format(pkg_name=pkg_name))
+        vulnerable_packages = cursor.fetchall()
 
         result_data = []
-        for pkg in found_pkgs:
+        for pkg in vulnerable_packages:
             vulnerability, source, name, opener, version_left, version_right, closer = pkg
-            if version_right == 'inf':
-                version_right = '9999999999999999'
-            vulnerable_interval = VulnerableInterval(
-                left_border=opener,
-                right_version=version_right,
-                left_version=version_left,
-                right_border=closer,
-            )
-            result_data.append(
-                (
-                    vulnerability,
-                    source,
-                    name,
-                    vulnerable_interval,
-                )
-            )
+            if version_right == INF:
+                version_right = INFINITE_VERSION
+            result_data.append((
+                vulnerability,
+                source,
+                name,
+                VulnerableInterval(
+                    left_border=opener,
+                    right_version=version_right,
+                    left_version=version_left,
+                    right_border=closer,
+                ),
+            ))
 
         return result_data
