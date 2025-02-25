@@ -178,3 +178,6 @@ vulnerabilities/
 
 # Test app dir
 app/
+
+# DB creator app dir
+dbcreator/
