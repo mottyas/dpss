@@ -7,7 +7,9 @@ import shutil
 from pathlib import Path
 
 import orjson
+from looseversion import LooseVersion
 
+from depss.models import VulnerableInterval, VersionBorder
 
 def make_path_from_str(path_string: str | Path) -> Path:
     """
@@ -123,3 +125,28 @@ def orjson_load_file(path_to_file: Path | str) -> dict | list[dict | str]:
     path_to_file = make_path_from_str(path_to_file)
     data: dict = orjson.loads(path_to_file.read_bytes())
     return data
+
+
+def check_is_vulnerable(pkg_version, vulnerable_interval: VulnerableInterval) -> bool:
+    """
+    Функция проверки принадлежности пакета к уязвимому интервалу версий
+
+    :param pkg_version: Версия используемого пакета
+    :param vulnerable_interval: Интервал уязвимых версий
+    :return: Попадает ли в уязвимый интервал
+    """
+
+    left_case = False
+    right_case = False
+    match vulnerable_interval.left_border:
+        case VersionBorder.GT:
+            left_case = LooseVersion(vulnerable_interval.left_version) < pkg_version
+        case VersionBorder.GTE:
+            left_case = LooseVersion(vulnerable_interval.left_version) <= pkg_version
+    match vulnerable_interval.right_border:
+        case VersionBorder.LT:
+            right_case = LooseVersion(vulnerable_interval.right_version) > pkg_version
+        case VersionBorder.LTE:
+            right_case = LooseVersion(vulnerable_interval.right_version) >= pkg_version
+
+    return left_case and right_case
