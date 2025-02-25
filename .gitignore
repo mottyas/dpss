@@ -175,3 +175,6 @@ data/
 
 # Data dir
 vulnerabilities/
+
+# Test app dir
+app/
