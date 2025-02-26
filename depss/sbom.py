@@ -7,9 +7,11 @@ import subprocess
 from pathlib import Path
 
 from depss.utils import orjson_dump_file, orjson_load_file
-from depss.models import SoftComponent
+from depss.models import SoftComponent, DetectedSoft, DetectedVulnerability, ReportModel
 from depss.const import REQUIREMENTS_FILE
-
+from depss.vulnerdb import VulnerabilityDB
+from depss.utils import check_is_vulnerable
+from depss.reporter import Reporter
 
 class GeneratorSBOM:
     """Класс генератора SBOM"""
@@ -85,3 +87,96 @@ class ParserSBOM:
             )
 
         return components
+
+class ComponentsAnalyzer:
+    """Класс анализатора компонентов"""
+
+    def __init__(
+            self,
+            sbom_source: str | Path,
+            db_path: Path | str,
+            package_folder: str | Path = None,
+    ) -> None:
+        """
+        Инициализация класса
+
+        :param sbom_source: Путь до SBOM файла
+        :param db_path: Путь до файла с БД
+        :param package_folder: Путь до директории с БД
+        """
+
+        self.sbom = orjson_load_file(sbom_source)
+        self.db_path = db_path
+        self.package_folder = package_folder
+
+    def get_components(self) -> list[SoftComponent]:
+        """Метод получения компонентов из SBOM"""
+
+        components = []
+        for component in self.sbom.get('components', []):
+            components.append(
+                SoftComponent(
+                    name=component['name'],
+                    purl=component['purl'],
+                    type=component['type'],
+                    version=component['version'],
+                )
+            )
+
+        return components
+
+    def find_vulnerabilities_in_components(self) ->  list[DetectedVulnerability]:
+        """
+        Метод поиска уязвимостей в компонентах
+
+        :return: Список найденных уязвимостей
+        """
+
+        found_vulnerabilities = {}
+        with VulnerabilityDB(db_path=self.db_path, package_folder=self.package_folder) as vulner_db:
+            for component in self.get_components():
+                pkg_version = component.version
+                pkg_name = component.name
+                vulnerabilities = vulner_db.get_package_vulnerabilities(pkg_name)
+                for vulner in vulnerabilities:
+                    vulnerability, source, pkg_name, vulnerable_interval = vulner
+                    is_vulnerable = check_is_vulnerable(pkg_version, vulnerable_interval)
+                    if not is_vulnerable:
+                        continue
+
+                    if not found_vulnerabilities.get(vulnerability):
+                        found_vulnerabilities[vulnerability] = {
+                            'id': vulnerability,
+                            'source': source,
+                            'soft': []
+                        }
+                    found_vulnerabilities[vulnerability]['soft'].append(
+                        DetectedSoft(
+                            vulnerable_interval=vulnerable_interval,
+                            pkg_name=pkg_name,
+                            pkg_version=pkg_version,
+                        )
+                    )
+
+        detected_vulnerabilities = []
+        for vulner, data in found_vulnerabilities.items():
+            detected_vulnerabilities.append(
+                DetectedVulnerability(
+                    vulner_id=vulner,
+                    source_name=data['source'],
+                    affected_soft=data['soft'],
+                )
+            )
+
+        return detected_vulnerabilities
+
+    def fast_check(self) -> ReportModel:
+        """Метод для быстрой проверки"""
+
+        detected_vulnerabilities = self.find_vulnerabilities_in_components()
+
+        reporter = Reporter(
+            detected_vulnerabilities=detected_vulnerabilities
+        )
+
+        return reporter.generate_report()
