@@ -31,7 +31,7 @@ if __name__ == '__main__':
     setup(
         name='depss',
         python_requires='>=3.12.0',
-        version=get_package_version,
+        version=get_package_version(),
         description='Software Composition Analysis package to protect your project from vulnerable dependencies.',
         license='',
         url='https://github.com/mottyas/depss',
