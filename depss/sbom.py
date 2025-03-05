@@ -7,7 +7,7 @@ import subprocess
 from pathlib import Path
 
 from depss.utils import orjson_dump_file, orjson_load_file
-from depss.models import SoftComponent, DetectedSoft, DetectedVulnerability, ReportModel
+from depss.models import SoftComponentSchema, DetectedSoftSchema, DetectedVulnerabilitySchema, ReportModelSchema
 from depss.const import REQUIREMENTS_FILE
 from depss.vulnerdb import VulnerabilityDB
 from depss.utils import check_is_vulnerable
@@ -72,13 +72,13 @@ class ParserSBOM:
 
         self.sbom = orjson_load_file(source)
 
-    def get_components(self) -> list[SoftComponent]:
+    def get_components(self) -> list[SoftComponentSchema]:
         """Метод получения компонентов из SBOM"""
 
         components = []
         for component in self.sbom.get('components', []):
             components.append(
-                SoftComponent(
+                SoftComponentSchema(
                     name=component['name'],
                     purl=component['purl'],
                     type=component['type'],
@@ -109,13 +109,13 @@ class ComponentsAnalyzer:
         self.db_path = db_path
         self.package_folder = package_folder
 
-    def get_components(self) -> list[SoftComponent]:
+    def get_components(self) -> list[SoftComponentSchema]:
         """Метод получения компонентов из SBOM"""
 
         components = []
         for component in self.sbom.get('components', []):
             components.append(
-                SoftComponent(
+                SoftComponentSchema(
                     name=component['name'],
                     purl=component['purl'],
                     type=component['type'],
@@ -125,7 +125,7 @@ class ComponentsAnalyzer:
 
         return components
 
-    def find_vulnerabilities_in_components(self) ->  list[DetectedVulnerability]:
+    def find_vulnerabilities_in_components(self) ->  list[DetectedVulnerabilitySchema]:
         """
         Метод поиска уязвимостей в компонентах
 
@@ -151,7 +151,7 @@ class ComponentsAnalyzer:
                             'soft': []
                         }
                     found_vulnerabilities[vulnerability]['soft'].append(
-                        DetectedSoft(
+                        DetectedSoftSchema(
                             vulnerable_interval=vulnerable_interval,
                             pkg_name=pkg_name,
                             pkg_version=pkg_version,
@@ -161,7 +161,7 @@ class ComponentsAnalyzer:
         detected_vulnerabilities = []
         for vulner, data in found_vulnerabilities.items():
             detected_vulnerabilities.append(
-                DetectedVulnerability(
+                DetectedVulnerabilitySchema(
                     vulner_id=vulner,
                     source_name=data['source'],
                     affected_soft=data['soft'],
@@ -170,7 +170,7 @@ class ComponentsAnalyzer:
 
         return detected_vulnerabilities
 
-    def fast_check(self) -> ReportModel:
+    def fast_check(self) -> ReportModelSchema:
         """Метод для быстрой проверки"""
 
         detected_vulnerabilities = self.find_vulnerabilities_in_components()

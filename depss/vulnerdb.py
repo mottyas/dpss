@@ -1,7 +1,7 @@
 import sqlite3
 from pathlib import Path
 
-from depss.models import VulnerableInterval
+from depss.models import VulnerableIntervalSchema
 from depss.const import INF, INFINITE_VERSION
 from depss.utils import orjson_load_file
 
@@ -88,7 +88,7 @@ class VulnerabilityDB:
                 vulnerability,
                 source,
                 name,
-                VulnerableInterval(
+                VulnerableIntervalSchema(
                     left_border=opener,
                     right_version=version_right,
                     left_version=version_left,

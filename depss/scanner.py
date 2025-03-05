@@ -4,7 +4,7 @@
 
 import paramiko
 
-from depss.models import ScanConfig, SSHResponse
+from depss.models import ScanConfigSchema, SSHResponseSchema
 from depss.utils import write_file
 
 from depss.config import DATA_DIR
@@ -14,7 +14,7 @@ from depss.const import REQUIREMENTS_FILE
 class Scanner:
     """Класс сканера проекта"""
 
-    def __init__(self, scan_config: ScanConfig) -> None:
+    def __init__(self, scan_config: ScanConfigSchema) -> None:
         """
         Метод инициализации объекта
 
@@ -47,7 +47,7 @@ class Scanner:
 
         self.client.close()
 
-    def send_command(self, command: str) -> SSHResponse:
+    def send_command(self, command: str) -> SSHResponseSchema:
         """
         Метод отправки команд на удаленный хост
 
@@ -57,7 +57,7 @@ class Scanner:
 
         stdin, stdout, stderr = self.client.exec_command(command)
 
-        return SSHResponse(
+        return SSHResponseSchema(
             stdin=stdin,
             stdout=stdout,
             stderr=stderr,

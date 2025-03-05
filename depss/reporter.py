@@ -5,11 +5,11 @@ from depss.config import PYTHON_PACKAGE_VULNERS_DIR
 from depss.const import TIMESTAMP_FORMAT
 from depss.utils import orjson_load_file
 from depss.models import (
-    DetectedVulnerability,
-    ReportModel,
-    AffectedSoft,
-    Rating,
-    VulnerDataModel,
+    DetectedVulnerabilitySchema,
+    ReportModelSchema,
+    AffectedSoftSchema,
+    RatingSchema,
+    VulnerDataSchema,
 )
 
 
@@ -26,7 +26,7 @@ class Reporter:
 
     def __init__(
             self,
-            detected_vulnerabilities: list[DetectedVulnerability],
+            detected_vulnerabilities: list[DetectedVulnerabilitySchema],
             report_type: str = ReportTypes.JSON,
     ) -> None:
         """
@@ -39,7 +39,7 @@ class Reporter:
         self.type = report_type
         self.vulnerabilities = detected_vulnerabilities
 
-    def generate_report(self) -> ReportModel | str | None:
+    def generate_report(self) -> ReportModelSchema | str | None:
         """Метод генерации отчета"""
 
         match self.type:
@@ -60,14 +60,14 @@ class Reporter:
 
         pass
 
-    def __generate_report_json(self) -> ReportModel:
+    def __generate_report_json(self) -> ReportModelSchema:
         """
         Метод генерации отчета JSON
 
         :return: Сформированный отчет
         """
 
-        report = ReportModel(creation_date=datetime.now().strftime(TIMESTAMP_FORMAT))
+        report = ReportModelSchema(creation_date=datetime.now().strftime(TIMESTAMP_FORMAT))
         for vulner in self.vulnerabilities:
             file_name = f'{vulner.source_name}.{vulner.vulner_id}.{vulner.vulner_id}.json'
             pkg_vulner_data = orjson_load_file(PYTHON_PACKAGE_VULNERS_DIR / file_name)
@@ -76,7 +76,7 @@ class Reporter:
             affected_soft = self.__get_affected_pkgs_data(vulner)
 
             report.vulnerabilities.append(
-                VulnerDataModel(
+                VulnerDataSchema(
                     identifier=pkg_vulner_data['identifier'],
                     published=pkg_vulner_data['published'],
                     source_name=pkg_vulner_data['source'][0]['source_name'],
@@ -103,7 +103,7 @@ class Reporter:
         ratings = []
         for rating in pkg_vulner_rating:
             ratings.append(
-                Rating(
+                RatingSchema(
                     method='CVSS',
                     score=rating['score'],
                     severity=rating['severity'],
@@ -117,7 +117,7 @@ class Reporter:
         return ratings
 
     @staticmethod
-    def __get_affected_pkgs_data(vulner:  DetectedVulnerability) -> list:
+    def __get_affected_pkgs_data(vulner:  DetectedVulnerabilitySchema) -> list:
         """
         Метод получения информации об уязвимых компонентах
 
@@ -128,7 +128,7 @@ class Reporter:
         affected_soft = []
         for soft in vulner.affected_soft:
             affected_soft.append(
-                AffectedSoft(
+                AffectedSoftSchema(
                     name=soft.pkg_name,
                     pkg_version=soft.pkg_version,
                     vulnerable_interval=soft.vulnerable_interval,

@@ -12,12 +12,13 @@ Depss - это библиотека, в которой заложена базо
 ### Создание конфигурации сканирования и запуск
 
 Пример:
+
 ```python
-from depss.models import ScanConfig
+from depss.models import ScanConfigSchema
 from depss.scanner import Scanner
 
 # Создаем конфигурацию сканирования
-scan_config = ScanConfig(
+scan_config = ScanConfigSchema(
     host='localhost',
     user='user',
     secret='password',

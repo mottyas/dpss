@@ -3,50 +3,64 @@
 """
 
 import enum
-from dataclasses import dataclass
 from datetime import datetime
 
 import paramiko
 from pydantic import (
     BaseModel,
     AnyUrl,
+    Field,
+    ConfigDict,
 )
 
 from depss.const import TIMESTAMP_FORMAT
 
 
-@dataclass
-class ScanConfig:
+class ProjectConfigSchema(BaseModel):
+    """Схема конфигурации проекта"""
+
+    name: str
+    type: str = 'python'
+    dir_path: str
+    description: str = ''
+
+    model_config = ConfigDict(extra='forbid')
+
+
+class ScanConfigSchema(BaseModel):
     """Класс конфигурации сканирования"""
 
     host: str
     user: str
     secret: str
     date: str = datetime.now().strftime(TIMESTAMP_FORMAT)
-    name: str = 'default'
-    project_dir: str = './'
-    project_name: str = 'default'
-    project_type: str = 'python'
+    name: str
+    description: str = ''
+    projects: list[ProjectConfigSchema]
     port: int = 22
 
+    model_config = ConfigDict(extra='forbid')
 
-@dataclass
-class SSHResponse:
-    """Класс ответа выполнения команды"""
+
+class SSHResponseSchema(BaseModel):
+    """Схема ответа выполнения команды"""
 
     stdin: paramiko.channel.ChannelStdinFile
     stdout: paramiko.channel.ChannelFile
     stderr: paramiko.channel.ChannelStderrFile
 
+    model_config = ConfigDict(extra='forbid')
 
-@dataclass
-class SoftComponent:
-    """Класс описания программного компонента"""
+
+class SoftComponentSchema(BaseModel):
+    """Схема описания программного компонента"""
 
     name: str
     purl: str
     type: str
     version: str
+
+    model_config = ConfigDict(extra='forbid')
 
 
 class VersionBorder(enum.StrEnum):
@@ -56,46 +70,49 @@ class VersionBorder(enum.StrEnum):
     GT: str = 'gt'
 
 
-@dataclass
-class VulnerableInterval:
-    """Класс описания границ уязвимого интервала"""
+class VulnerableIntervalSchema(BaseModel):
+    """Схема описания границ уязвимого интервала"""
 
     left_border: VersionBorder
     right_version: str
     left_version: str
     right_border: VersionBorder
 
+    model_config = ConfigDict(extra='forbid')
 
-@dataclass
-class DetectedSoft:
+
+class DetectedSoftSchema(BaseModel):
     """Найденный уязвимый софт"""
 
-    vulnerable_interval: VulnerableInterval
+    vulnerable_interval: VulnerableIntervalSchema
     pkg_name: str
     pkg_version: str
 
+    model_config = ConfigDict(extra='forbid')
 
-@dataclass
-class DetectedVulnerability:
-    """Датакласс с кратким описанием найденной уязвимости"""
+
+class DetectedVulnerabilitySchema(BaseModel):
+    """Схема с кратким описанием найденной уязвимости"""
 
     vulner_id: str
     source_name: str
-    affected_soft: list[DetectedSoft]
+    affected_soft: list[DetectedSoftSchema]
+
+    model_config = ConfigDict(extra='forbid')
 
 
-class AffectedSoft(BaseModel):
-    """Класс валидации уязвимого софта"""
+class AffectedSoftSchema(BaseModel):
+    """Схема валидации уязвимого софта"""
 
     name: str
     pkg_version: str
     pkg_type: str | None = None
     vendor: str | None = None
-    vulnerable_interval: VulnerableInterval
+    vulnerable_interval: VulnerableIntervalSchema
 
 
-class Rating(BaseModel):
-    """Класс валидации рейтинга уязвимости"""
+class RatingSchema(BaseModel):
+    """Схема валидации рейтинга уязвимости"""
 
     method: str | None = None
     score: float | None = None
@@ -105,24 +122,30 @@ class Rating(BaseModel):
     vector: str | None = None
     version: float | None = None
 
+    model_config = ConfigDict(extra='forbid')
 
-class VulnerDataModel(BaseModel):
-    """Класс валидации информации об уязвимости"""
+
+class VulnerDataSchema(BaseModel):
+    """Схема валидации информации об уязвимости"""
 
     identifier: str
     published: str
     source_name: str
     source_url: AnyUrl
     description: str
-    affected_packages: list[AffectedSoft]
+    affected_packages: list[AffectedSoftSchema]
     cwes: list[str] | None = None
-    ratings: list[Rating] | None = None
+    ratings: list[RatingSchema] | None = None
     references: list[dict] | None = None
 
+    model_config = ConfigDict(extra='forbid')
 
-class ReportModel(BaseModel):
-    """Модель валидации всего отчета"""
 
-    vulnerabilities: list[VulnerDataModel] | None = []
+class ReportModelSchema(BaseModel):
+    """Схема валидации всего отчета"""
+
+    vulnerabilities: list[VulnerDataSchema] | None = []
     creation_date: str
     author: str | None = None
+
+    model_config = ConfigDict(extra='forbid')

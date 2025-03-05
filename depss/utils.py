@@ -9,7 +9,7 @@ from pathlib import Path
 import orjson
 from looseversion import LooseVersion
 
-from depss.models import VulnerableInterval, VersionBorder
+from depss.models import VulnerableIntervalSchema, VersionBorder
 
 def make_path_from_str(path_string: str | Path) -> Path:
     """
@@ -127,7 +127,7 @@ def orjson_load_file(path_to_file: Path | str) -> dict | list[dict | str]:
     return data
 
 
-def check_is_vulnerable(pkg_version, vulnerable_interval: VulnerableInterval) -> bool:
+def check_is_vulnerable(pkg_version, vulnerable_interval: VulnerableIntervalSchema) -> bool:
     """
     Функция проверки принадлежности пакета к уязвимому интервалу версий
 
