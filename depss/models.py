@@ -24,7 +24,7 @@ class ProjectConfigSchema(BaseModel):
     dir_path: str
     description: str = ''
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class ScanConfigSchema(BaseModel):
@@ -39,7 +39,7 @@ class ScanConfigSchema(BaseModel):
     projects: list[ProjectConfigSchema]
     port: int = 22
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class SSHResponseSchema(BaseModel):
@@ -49,7 +49,7 @@ class SSHResponseSchema(BaseModel):
     stdout: paramiko.channel.ChannelFile
     stderr: paramiko.channel.ChannelStderrFile
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class SoftComponentSchema(BaseModel):
@@ -60,7 +60,7 @@ class SoftComponentSchema(BaseModel):
     type: str
     version: str
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class VersionBorder(enum.StrEnum):
@@ -78,7 +78,7 @@ class VulnerableIntervalSchema(BaseModel):
     left_version: str
     right_border: VersionBorder
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class DetectedSoftSchema(BaseModel):
@@ -88,7 +88,7 @@ class DetectedSoftSchema(BaseModel):
     pkg_name: str
     pkg_version: str
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class DetectedVulnerabilitySchema(BaseModel):
@@ -98,7 +98,7 @@ class DetectedVulnerabilitySchema(BaseModel):
     source_name: str
     affected_soft: list[DetectedSoftSchema]
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class AffectedSoftSchema(BaseModel):
@@ -109,6 +109,8 @@ class AffectedSoftSchema(BaseModel):
     pkg_type: str | None = None
     vendor: str | None = None
     vulnerable_interval: VulnerableIntervalSchema
+
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class RatingSchema(BaseModel):
@@ -122,7 +124,7 @@ class RatingSchema(BaseModel):
     vector: str | None = None
     version: float | None = None
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class VulnerDataSchema(BaseModel):
@@ -138,7 +140,7 @@ class VulnerDataSchema(BaseModel):
     ratings: list[RatingSchema] | None = None
     references: list[dict] | None = None
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
 
 class ReportModelSchema(BaseModel):
@@ -148,4 +150,4 @@ class ReportModelSchema(BaseModel):
     creation_date: str
     author: str | None = None
 
-    model_config = ConfigDict(extra='forbid')
+    model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
