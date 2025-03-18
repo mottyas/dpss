@@ -66,14 +66,15 @@ class Scanner:
     def save_project_requirements(self) -> None:
         """Метод сохранения requirements"""
 
-        command = f'cat {self.config.project_dir}/{REQUIREMENTS_FILE}'
-        response = self.send_command(command)
-        output_dir = DATA_DIR / self.config.project_type / self.config.project_name
-        data = response.stdout.read().decode()
+        for project in self.config.projects:
+            command = f'cat {project.dir}/{REQUIREMENTS_FILE}'
+            response = self.send_command(command)
+            output_dir = DATA_DIR / project.type / project.name
+            data = response.stdout.read().decode()
 
-        if not response.stderr.read().decode():
-            write_file(
-                output_dir=output_dir,
-                filename=REQUIREMENTS_FILE,
-                data=data,
-            )
+            if not response.stderr.read().decode():
+                write_file(
+                    output_dir=output_dir,
+                    filename=REQUIREMENTS_FILE,
+                    data=data,
+                )

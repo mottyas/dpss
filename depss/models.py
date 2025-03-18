@@ -21,7 +21,7 @@ class ProjectConfigSchema(BaseModel):
 
     name: str
     type: str = 'python'
-    dir_path: str
+    dir: str
     description: str = ''
 
     model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
