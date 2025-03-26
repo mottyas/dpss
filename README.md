@@ -1,21 +1,30 @@
-# Dependency security screening system (depss)
+# Dependency security screening system (dpss)
 
 ## Краткое описание
 
 Данный проект является частью моей магистерской работы. 
-Depss - это библиотека, в которой заложена базовая логика 
+Dpss - это библиотека, в которой заложена базовая логика 
 работы связанная с поиском уязвимостей в проектах написанных 
 на python (пока что), а именно анализ зависимостей в проект (SCA).
 
 ## Примеры использования
+
+
+### Быстрый старт на моём примере
+
+Пример того, как можно использовать библиотеку в своем коде можно 
+посмотреть в скрипте `example.py`.
+
+Так же возможно использовать отдельно представленные классы для работы
+со сканером уязвимостей, о чем можно прочитать далее.
 
 ### Создание конфигурации сканирования и запуск
 
 Пример:
 
 ```python
-from depss.models import ScanConfigSchema
-from depss.scanner import Scanner
+from dpss.models import ScanConfigSchema
+from dpss.scanner import Scanner
 
 # Создаем конфигурацию сканирования
 scan_config = ScanConfigSchema(
@@ -34,7 +43,7 @@ scanner.save_project_requirements()
 ### Генерация SBOM и сохранение в файл
 
 ```python
-from depss.sbom import GeneratorSBOM
+from dpss.sbom import GeneratorSBOM
 
 # Создаем объект генератора
 sbom_generator = GeneratorSBOM(
@@ -49,8 +58,9 @@ sbom_generator.generate_sbom(is_need_dump_file=True)
 ### Использование парсера SBOM
 
 Для удобства получения данных из SBOM можно воспользоваться парсером:
+
 ```python
-from depss.sbom import ParserSBOM
+from dpss.sbom import ParserSBOM
 
 parser = ParserSBOM('project_dir/sbom.json')
 
@@ -61,8 +71,9 @@ components = parser.get_components()
 ### Работа с базой данных и анализатором
 
 Для того чтобы проанализировать сгенерированный SBOM файл:
+
 ```python
-from depss.sbom import ComponentsAnalyzer
+from dpss.sbom import ComponentsAnalyzer
 
 sbom_analyzer = ComponentsAnalyzer(
     sbom_source='project_dir/sbom.json',

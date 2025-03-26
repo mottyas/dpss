@@ -6,12 +6,12 @@ import json
 import subprocess
 from pathlib import Path
 
-from depss.utils import orjson_dump_file, orjson_load_file
-from depss.models import SoftComponentSchema, DetectedSoftSchema, DetectedVulnerabilitySchema, ReportModelSchema
-from depss.const import REQUIREMENTS_FILE
-from depss.vulnerdb import VulnerabilityDB
-from depss.utils import check_is_vulnerable
-from depss.reporter import Reporter
+from dpss.utils import orjson_dump_file, orjson_load_file
+from dpss.models import SoftComponentSchema, DetectedSoftSchema, DetectedVulnerabilitySchema, ReportModelSchema
+from dpss.const import REQUIREMENTS_FILE
+from dpss.vulnerdb import VulnerabilityDB
+from dpss.utils import check_is_vulnerable
+from dpss.reporter import Reporter
 
 class GeneratorSBOM:
     """Класс генератора SBOM"""
@@ -153,8 +153,8 @@ class ComponentsAnalyzer:
                     found_vulnerabilities[vulnerability]['soft'].append(
                         DetectedSoftSchema(
                             vulnerable_interval=vulnerable_interval,
-                            pkg_name=pkg_name,
-                            pkg_version=pkg_version,
+                            name=pkg_name,
+                            version=pkg_version,
                         )
                     )
 

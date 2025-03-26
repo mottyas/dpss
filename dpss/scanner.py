@@ -4,11 +4,11 @@
 
 import paramiko
 
-from depss.models import ScanConfigSchema, SSHResponseSchema
-from depss.utils import write_file
+from dpss.models import ScanConfigSchema, SSHResponseSchema
+from dpss.utils import write_file
 
-from depss.config import DATA_DIR
-from depss.const import REQUIREMENTS_FILE
+from dpss.config import DATA_DIR
+from dpss.const import REQUIREMENTS_FILE
 
 
 class Scanner:

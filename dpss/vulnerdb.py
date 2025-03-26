@@ -1,9 +1,9 @@
 import sqlite3
 from pathlib import Path
 
-from depss.models import VulnerableIntervalSchema
-from depss.const import INF, INFINITE_VERSION
-from depss.utils import orjson_load_file
+from dpss.models import VulnerableIntervalSchema
+from dpss.const import INF, INFINITE_VERSION
+from dpss.utils import orjson_load_file
 
 
 class VulnerabilityDB:

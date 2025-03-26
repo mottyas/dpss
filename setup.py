@@ -29,7 +29,7 @@ def get_requirements(requirements_file: str = REQUIREMENTS) -> list[str]:
 
 if __name__ == '__main__':
     setup(
-        name='depss',
+        name='dpss',
         python_requires='>=3.12.0',
         version=get_package_version(),
         description='Software Composition Analysis package to protect your project from vulnerable dependencies.',

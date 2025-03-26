@@ -9,7 +9,7 @@ from pathlib import Path
 import orjson
 from looseversion import LooseVersion
 
-from depss.models import VulnerableIntervalSchema, VersionBorder
+from dpss.models import VulnerableIntervalSchema, VersionBorder
 
 def make_path_from_str(path_string: str | Path) -> Path:
     """

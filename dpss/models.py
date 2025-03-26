@@ -13,14 +13,20 @@ from pydantic import (
     ConfigDict,
 )
 
-from depss.const import TIMESTAMP_FORMAT
+from dpss.const import TIMESTAMP_FORMAT
+
+
+class ProjectTypes(enum.StrEnum):
+    """Типы поддерживаемых проектов"""
+
+    PYTHON: str = 'python'
 
 
 class ProjectConfigSchema(BaseModel):
     """Схема конфигурации проекта"""
 
     name: str
-    type: str = 'python'
+    type: str = ProjectTypes.PYTHON
     dir: str
     description: str = ''
 
@@ -85,8 +91,8 @@ class DetectedSoftSchema(BaseModel):
     """Найденный уязвимый софт"""
 
     vulnerable_interval: VulnerableIntervalSchema
-    pkg_name: str
-    pkg_version: str
+    name: str
+    version: str
 
     model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
@@ -105,8 +111,8 @@ class AffectedSoftSchema(BaseModel):
     """Схема валидации уязвимого софта"""
 
     name: str
-    pkg_version: str
-    pkg_type: str | None = None
+    version: str
+    type: str | None = None
     vendor: str | None = None
     vulnerable_interval: VulnerableIntervalSchema
 

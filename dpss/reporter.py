@@ -1,10 +1,11 @@
 import enum
 from datetime import datetime
+from pathlib import Path
 
-from depss.config import PYTHON_PACKAGE_VULNERS_DIR
-from depss.const import TIMESTAMP_FORMAT
-from depss.utils import orjson_load_file
-from depss.models import (
+from dpss.config import PYTHON_PACKAGE_VULNERS_DIR
+from dpss.const import TIMESTAMP_FORMAT
+from dpss.utils import orjson_load_file
+from dpss.models import (
     DetectedVulnerabilitySchema,
     ReportModelSchema,
     AffectedSoftSchema,
@@ -28,6 +29,7 @@ class Reporter:
             self,
             detected_vulnerabilities: list[DetectedVulnerabilitySchema],
             report_type: str = ReportTypes.JSON,
+            vulnerabilities_package_path: str = PYTHON_PACKAGE_VULNERS_DIR
     ) -> None:
         """
         Инициализация класса
@@ -38,6 +40,9 @@ class Reporter:
 
         self.type = report_type
         self.vulnerabilities = detected_vulnerabilities
+        self.vulnerabilities_package_path = vulnerabilities_package_path
+        if isinstance(self.vulnerabilities_package_path, str):
+            self.vulnerabilities_package_path = Path(vulnerabilities_package_path)
 
     def generate_report(self) -> ReportModelSchema | str | None:
         """Метод генерации отчета"""
@@ -129,8 +134,8 @@ class Reporter:
         for soft in vulner.affected_soft:
             affected_soft.append(
                 AffectedSoftSchema(
-                    name=soft.pkg_name,
-                    pkg_version=soft.pkg_version,
+                    name=soft.name,
+                    version=soft.version,
                     vulnerable_interval=soft.vulnerable_interval,
                 )
             )
