@@ -2,7 +2,6 @@ import enum
 from datetime import datetime
 from pathlib import Path
 
-from dpss.config import PYTHON_PACKAGE_VULNERS_DIR
 from dpss.const import TIMESTAMP_FORMAT
 from dpss.utils import orjson_load_file
 from dpss.models import (
@@ -28,8 +27,8 @@ class Reporter:
     def __init__(
             self,
             detected_vulnerabilities: list[DetectedVulnerabilitySchema],
+            vulnerabilities_package_path: str | Path,
             report_type: str = ReportTypes.JSON,
-            vulnerabilities_package_path: str = PYTHON_PACKAGE_VULNERS_DIR
     ) -> None:
         """
         Инициализация класса

@@ -114,7 +114,9 @@ class DependencySecurityScanner:
             )
 
         reporter = Reporter(
-            detected_vulnerabilities=detected_vulnerabilities
+            detected_vulnerabilities=detected_vulnerabilities,
+            vulnerabilities_package_path=self.vulners_package_dir,
+
         )
 
         self.report = reporter.generate_report()
