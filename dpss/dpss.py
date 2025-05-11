@@ -1,6 +1,5 @@
 from pathlib import Path
 
-from dpss.config import DATA_DIR, PYTHON_PACKAGE_VULNERS_DIR
 from dpss.scanner import Scanner
 from dpss.sbom import GeneratorSBOM, ParserSBOM
 from dpss.models import ScanConfigSchema, SoftComponentSchema, DetectedVulnerabilitySchema, DetectedSoftSchema
@@ -16,8 +15,8 @@ class DependencySecurityScanner:
             self,
             scan_config: ScanConfigSchema,
             db_path: str | Path,
-            data_dir: Path = DATA_DIR,
-            vulners_package_dir: Path = PYTHON_PACKAGE_VULNERS_DIR
+            data_dir: Path,
+            vulners_package_dir: Path,
     ) -> None:
         """Инициализация объекта класса"""
 

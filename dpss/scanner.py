@@ -2,26 +2,34 @@
 Модуль сканера удаленных хостов
 """
 
+from pathlib import Path
+
 import paramiko
 
 from dpss.models import ScanConfigSchema, SSHResponseSchema
 from dpss.utils import write_file
-
-from dpss.config import DATA_DIR
 from dpss.const import REQUIREMENTS_FILE
 
 
 class Scanner:
     """Класс сканера проекта"""
 
-    def __init__(self, scan_config: ScanConfigSchema) -> None:
+    def __init__(
+        self,
+        data_dir: str | Path,
+        scan_config: ScanConfigSchema,
+    ) -> None:
         """
         Метод инициализации объекта
 
         :param scan_config: Конфигурация сканирования
         """
 
+        if isinstance(data_dir, str):
+            data_dir = Path(data_dir)
+
         self.config = scan_config
+        self.data_dir = data_dir
         self.client = self._get_connection()
 
     def _get_connection(self) -> paramiko.SSHClient:
@@ -69,7 +77,7 @@ class Scanner:
         for project in self.config.projects:
             command = f'cat {project.dir}/{REQUIREMENTS_FILE}'
             response = self.send_command(command)
-            output_dir = DATA_DIR / project.type / project.name
+            output_dir = self.data_dir / project.type / project.name
             data = response.stdout.read().decode()
 
             if not response.stderr.read().decode():
