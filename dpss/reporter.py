@@ -74,7 +74,7 @@ class Reporter:
         report = ReportModelSchema(creation_date=datetime.now().strftime(TIMESTAMP_FORMAT))
         for vulner in self.vulnerabilities:
             file_name = f'{vulner.source_name}.{vulner.vulner_id}.{vulner.vulner_id}.json'
-            pkg_vulner_data = orjson_load_file(PYTHON_PACKAGE_VULNERS_DIR / file_name)
+            pkg_vulner_data = orjson_load_file(self.vulnerabilities_package_path / file_name)
 
             ratings = self.__get_ratings_data(pkg_vulner_data['ratings'])
             affected_soft = self.__get_affected_pkgs_data(vulner)
