@@ -44,6 +44,7 @@ class ScanConfigSchema(BaseModel):
     description: str = ''
     projects: list[ProjectConfigSchema]
     port: int = 22
+    report_type: str
 
     model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 

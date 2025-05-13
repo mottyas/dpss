@@ -20,11 +20,12 @@ class DependencySecurityScanner:
     ) -> None:
         """Инициализация объекта класса"""
 
-        self.scanner = Scanner(scan_config=scan_config)
+        self.scanner = Scanner(scan_config=scan_config, data_dir=data_dir)
         self.data_dir = data_dir
         self.db_path = db_path
         self.vulners_package_dir = vulners_package_dir
         self.found_vulnerabilities = {}
+        self.report_type = scan_config.report_type
         self.report = None
 
     def run(self) -> None:
@@ -116,7 +117,7 @@ class DependencySecurityScanner:
         reporter = Reporter(
             detected_vulnerabilities=detected_vulnerabilities,
             vulnerabilities_package_path=self.vulners_package_dir,
-
+            report_type=self.report_type,
         )
 
         self.report = reporter.generate_report()
