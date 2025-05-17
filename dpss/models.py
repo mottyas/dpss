@@ -14,6 +14,7 @@ from pydantic import (
 )
 
 from dpss.const import TIMESTAMP_FORMAT
+from dpss.reporter import ReportTypes
 
 
 class ProjectTypes(enum.StrEnum):
@@ -44,7 +45,7 @@ class ScanConfigSchema(BaseModel):
     description: str = ''
     projects: list[ProjectConfigSchema]
     port: int = 22
-    report_type: str
+    report_type: str = ReportTypes.JSON
 
     model_config = ConfigDict(extra='forbid', arbitrary_types_allowed=True)
 
