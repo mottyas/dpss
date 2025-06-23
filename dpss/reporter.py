@@ -46,13 +46,16 @@ class Reporter:
     def generate_report(self) -> ReportModelSchema | str | None:
         """Метод генерации отчета"""
 
+        report = None
         match self.type:
             case ReportTypes.JSON:
-                return self.__generate_report_json()
+                report = self.__generate_report_json()
             case ReportTypes.HTML:
-                return self.__generate_report_html()
+                report = self.__generate_report_html()
             case ReportTypes.MARKDOWN:
-                return self.__generate_report_markdown()
+                report = self.__generate_report_markdown()
+
+        return report
 
     def __generate_report_html(self) -> str:
         """Метод генерации отчета HTML"""
